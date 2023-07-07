@@ -1,4 +1,3 @@
-//use libc::SO_ATTACH_REUSEPORT_CBPF;
 use memflow::cglue;
 use memflow::os::process::*;
 use memflow::prelude::v1::*;
