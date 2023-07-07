@@ -1,3 +1,4 @@
+use libc::SO_ATTACH_REUSEPORT_CBPF;
 use memflow::cglue;
 use memflow::os::process::*;
 use memflow::prelude::v1::*;
@@ -40,6 +41,17 @@ cglue_impl_group!(WindowsProcess, ProcessInstance, {});
 cglue_impl_group!(WindowsProcess, IntoProcessInstance, {});
 
 impl Process for WindowsProcess {
+    fn set_dtb(&mut self, dtb: memflow::types::Address, _dtb2: memflow::types::Address) -> Result<()> {
+        self.info.dtb1 = dtb;
+        self.info.dtb2 = Address::invalid();
+        Ok(())
+    }
+
+    /// Retrieves the state of the process
+    fn state(&mut self) -> ProcessState {
+        ProcessState::Unknown
+    }
+
     /// Walks the process' module list and calls the provided callback for each module structure
     /// address
     ///
@@ -160,6 +172,14 @@ impl Process for WindowsProcess {
         })
     }
 
+    /// Retrieves address of the primary module structure of the process
+    ///
+    /// This will generally be for the initial executable that was run
+    fn primary_module_address(&mut self) -> Result<Address> {
+        // TODO: Is it always 0th mod?
+        Ok(Address::from(0))
+    }
+
     fn module_import_list_callback(
         &mut self,
         info: &ModuleInfo,
@@ -184,22 +204,9 @@ impl Process for WindowsProcess {
         memflow::os::util::module_section_list_callback(&mut self.virt_mem, info, callback)
     }
 
-    /// Retrieves address of the primary module structure of the process
-    ///
-    /// This will generally be for the initial executable that was run
-    fn primary_module_address(&mut self) -> Result<Address> {
-        // TODO: Is it always 0th mod?
-        Ok(Address::from(0))
-    }
-
     /// Retrieves the process info
     fn info(&self) -> &ProcessInfo {
         &self.info
-    }
-
-    /// Retrieves the state of the process
-    fn state(&mut self) -> ProcessState {
-        ProcessState::Unknown
     }
 
     fn mapped_mem_range(

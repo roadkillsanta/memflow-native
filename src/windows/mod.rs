@@ -187,6 +187,8 @@ impl Os for WindowsOs {
                     command_line: "".into(),
                     sys_arch: self.info.arch,
                     proc_arch: self.info.arch,
+                    dtb1: Address::invalid(),
+                    dtb2: Address::invalid(),
                 });
 
                 address
