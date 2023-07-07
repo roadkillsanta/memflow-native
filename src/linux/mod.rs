@@ -114,6 +114,8 @@ impl Os for LinuxOs {
             sys_arch: ArchitectureIdent::X86(64, false),
             proc_arch: ArchitectureIdent::X86(64, false),
             state: ProcessState::Alive,
+            dtb1: Address::invalid(),
+            dtb2: Address::invalid(),
         })
     }
 
